@@ -1,0 +1,45 @@
+
+<div id="vue01">
+    用户名：<input type="text" v-model="username">
+    年龄：<input type="text" v-model="age">
+    信息汇总：<input type="text" v-model="info">
+    <!-- 显示 -->
+    <h3>{{username}}</h3>
+    <!-- 显示、渲染 -->
+    <h4 v-text="site"></h4>
+    <h4 v-html="site"></h4>
+    <!-- 属性赋值 -->
+    <!-- <img v-bind:src="img" alt="error">
+    <img :src="img" alt="error"> -->
+
+    <input type="button" value="按钮1" v-on:click="method01">
+    <input type="button" value="按钮2" @click="method02('zs')">
+</div>
+
+<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    var vm = new Vue({
+        el:'#vue01',
+        data:{
+            username:'如：张三',
+            age:23,
+            site:'<a href="https://www.bilibili.com">哔哩哔哩</a>',
+            img:'D:/image/头像/0.jpg'
+            //computed方法的方法名会成为data中的变量名，返回值就是data中的变量值。相当于：
+            //info:info()    注意：html中只能同变量info调用而不能直接调用computed中的方法info()
+        },
+        methods:{
+            method01(){
+                alert('hello world')
+            },
+            method02(name){
+                alert('hello world '+name)
+            }
+        },
+        computed:{//初始自动加载，和变量是共享的（在data中定义的变量，就不能再在computed中定义）
+            info(){//这里是info()方法
+                return this.username+','+this.age
+            }
+        }
+    })
+</script>
