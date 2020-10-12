@@ -1,45 +1,113 @@
+<head>
+    <style>
+        .mystyle1 {
+            background-color: rgba(15, 98, 165, 0.582);
+            width: 100px;
+            height: 100px;
+        }
 
-<div id="vue01">
-    用户名：<input type="text" v-model="username">
-    年龄：<input type="text" v-model="age">
-    信息汇总：<input type="text" v-model="info">
-    <!-- 显示 -->
-    <h3>{{username}}</h3>
-    <!-- 显示、渲染 -->
-    <h4 v-text="site"></h4>
-    <h4 v-html="site"></h4>
-    <!-- 属性赋值 -->
-    <!-- <img v-bind:src="img" alt="error">
+        .mystyle2 {
+            background-color: rgb(235, 127, 245);
+            width: 50px;
+            height: 50px;
+        }
+
+        .mystyle3 {
+            font-size: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="vue01">
+        用户名：<input type="text" v-model="username">
+        年龄：<input type="text" v-model="age">
+        信息汇总：<input type="text" v-model="info">
+        <!-- 显示 -->
+        <h3>{{username}}</h3>
+        <!-- 显示、渲染 -->
+        <h4 v-text="site"></h4>
+        <h4 v-html="site"></h4>
+        <!-- 属性赋值 -->
+        <!-- <img v-bind:src="img" alt="error">
     <img :src="img" alt="error"> -->
 
-    <input type="button" value="按钮1" v-on:click="method01">
-    <input type="button" value="按钮2" @click="method02('zs')">
-</div>
+        <input type="button" value="按钮1" v-on:click="method01">
+        <input type="button" value="按钮2" @click="method02('zs')">
 
-<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript">
-    var vm = new Vue({
-        el:'#vue01',
-        data:{
-            username:'如：张三',
-            age:23,
-            site:'<a href="https://www.bilibili.com">哔哩哔哩</a>',
-            img:'D:/image/头像/0.jpg'
-            //computed方法的方法名会成为data中的变量名，返回值就是data中的变量值。相当于：
-            //info:info()    注意：html中只能同变量info调用而不能直接调用computed中的方法info()
-        },
-        methods:{
-            method01(){
-                alert('hello world')
+        <p v-if="vif">当前可视</p>
+        <p v-else>当前不可视</p>
+        <!-- v-show可以在源码中 追踪到隐藏的元素；v-if无法追踪-->
+        <h3 v-show="vif">2当前可视</h3>
+        <h3 v-show="!vif">2当前不可视</h3>
+
+        <h3 :class="css1">css</h3>
+        <h3 :class="{mystyle2:true,mystyle3:true}">组合css</h3>
+        <!-- 不能 xxx-yyyy，而需要使用 xxxYyyy-->
+        <h3 :style="{backgroundColor:'gray',color:'red'}">info000000</h3>
+
+        <ol>
+            <li v-for="student in students">
+                {{student.name}}--{{student.age}}
+            </li>
+        </ol>
+
+        <ul>
+            <li v-for="(s,index) in students">
+                {{index}}--{{s.name}}--{{s.age}}--<input type="button" value="删除" @click="deleteStudentByIndex(index)">
+            </li>
+        </ul>
+    </div>
+
+    <script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: '#vue01',
+            data: {
+                username: '如：张三',
+                age: 23,
+                site: '<a href="https://www.bilibili.com">哔哩哔哩</a>',
+                img: 'D:/image/头像/0.jpg',
+                //computed方法的方法名会成为data中的变量名，返回值就是data中的变量值。相当于：
+                //info:info()    注意：html中只能同变量info调用而不能直接调用computed中的方法info()
+
+                css1: 'mystyle1', //引用css style不需要加'.'
+                vif: false,
+                students: [
+                    { name: 'zs', age: 23 },
+                    { name: 'ls', age: 24 },
+                    { name: 'ww', age: 25 }
+                ]
             },
-            method02(name){
-                alert('hello world '+name)
-            }
-        },
-        computed:{//初始自动加载，和变量是共享的（在data中定义的变量，就不能再在computed中定义）
-            info(){//这里是info()方法
-                return this.username+','+this.age
-            }
-        }
-    })
-</script>
+            methods: {
+                method01() {
+                    alert('hello world')
+                },
+                method02(name) {
+                    alert('hello world ' + name)
+                },
+                deleteStudentByIndex(index) {
+                    //删除数组元素:splice
+                    //删除完毕后，数组元素 会自动重新排序
+                    this.students.splice(index, 1);
+                },
+            },
+            computed: {//初始自动加载，和变量是共享的（在data中定义的变量，就不能再在computed中定义）
+                info() {//这里是info()方法，该方法只会执行一次，计算后的变量会加载到缓存
+                    return this.username + ',' + this.age
+                }
+            },
+            //监听写法1
+            // watch:{
+            //     username:function(value){
+            //         this.age=value+"***"
+            //     }
+            // }
+        })
+
+        //监听写法2
+        vm.$watch('username', function (value) {
+            this.age = value + "***"
+        })
+    </script>
+</body>
