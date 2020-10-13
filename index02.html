@@ -1,0 +1,136 @@
+<head>
+    <title>vue</title>
+    <style>
+        [v-cloak] {
+            display: none;
+            /*当元素中的占位符没被替换前，先隐藏*/
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="vue03" v-cloak>
+        <p v-text-upper="myVariable"></p>
+        <p v-text-lower="myVariable"></p>
+    </div>
+
+
+    <div id="vue02" >
+
+        <p v-text-upper="myVariable"></p>
+
+
+        {{ now | dateFilter('YYYY-MM-DD')}}
+        {{ now | dateFilter}}
+        <form action="" @submit.prevent="mysubmit">
+            用户名：<input type="text" v-model="user.username"><br>
+            密码：<input type="password" v-model="user.password"><br>
+            性别：
+            <input type="radio" value="male" v-model="user.password">男<br>
+            <input type="radio" value="female" v-model="user.password">女<br>
+            兴趣：
+            <input type="checkbox" value="football" v-model="user.hobbies">足球，
+            <input type="checkbox" value="basketball" v-model="user.hobbies">篮球，
+            <input type="checkbox" value="pingpang" v-model="user.hobbies">乒乓球，
+            城市：
+            <select name="" id="" v-model="user.city">
+                <option :value="c.id" v-for="c in optionalCities">
+
+                    {{c.name}}
+                </option>
+            </select>
+
+            <input type="submit" value="注册">
+
+        </form>
+    </div>
+
+    <!-- <script type="text/javascript" src="js/myPlugin.js"></script> -->
+    <script type="text/javascript" src="js/vue.js"></script>
+    <script type="text/javascript" src="js/moment.js"></script>
+    <script type="text/javascript">
+
+        //使用插件
+        // Vue.use(MyPlugin);
+
+        //过滤：注册->使用  (西方日期 ->格式)    //es6:函数默认参数值
+        Vue.filter('dateFilter', function (value, dateFormat = 'YYYY-MM-DD HH:mm:ss') {
+            return moment(value).format(dateFormat);
+        })
+
+        //注册全局指令
+        Vue.directive('text-upper', function (el, binding) {
+
+            el.innerHTML = binding.value.toUpperCase();
+        })
+
+
+        new Vue({
+            el: '#vue03',  //选择器
+            //< input  v-model="user.username" >
+            data: {
+                myVariable: "Hello World",
+            },
+            //注册局部指令
+            directives: {
+                'text-lower': {
+                    bind(el, binding) {
+                        el.innerHTML = binding.value.toLowerCase();
+                    }
+                }
+
+            }
+
+        })
+
+        var vm = new Vue({
+            el: '#vue02',  //选择器
+            //< input  v-model="user.username" >
+            data: {
+                myVariable: "Hello World",
+                now: new Date(),
+                user: {
+                    username: '',
+                    passowrd: '',
+                    sex: 'male',
+                    hobbies: [],
+                    city: '' //选中
+                },
+                //可选
+                optionalCities: [{ id: 1, name: 'xa' }, { id: 2, name: 'bj' }, { id: 3, name: 'sh' }]
+            },
+            beforeCreate() {
+                // alert("before inject...");
+            }
+            ,
+            created() {
+                // alert("after inject...");
+            },
+            beforeMount() {
+                //  alert("beforeMount...");
+            },
+            mounted() {
+                // alert("after mounted...");
+            },
+            updated() {
+                //alert("更新dom元素...");
+            },
+            methods: {//自定义方法
+                mysubmit() {
+                    console.log(JSON.stringify(this.user));
+                }
+            }
+        })
+
+
+
+        //全局：static   
+        //类名.静态方法()
+        Vue.myGlobalMethod();
+        //对象.方法()
+        vm.$myMethod();
+
+
+    </script>
+</body>

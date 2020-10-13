@@ -20,6 +20,25 @@
 
 <body>
     <div id="vue01">
+        <!-- 若要获取当前dom对象只能通过下面两种方法而不能用 myclickerror() -->
+        <input type="button" value="button01" @click="myclick01">
+        <input type="button" value="button02" @click="myclick02($event)">
+
+        <a :href="Bsite">bilibili</a>
+        <a :href="Bsite" @click.prevent>bilibili</a>
+
+        <!-- vue中默认传递事件，阻止同click.stop -->
+        <div :class='css1' @click="myclick03">
+            outter
+            <div :class="css2" @click.stop="myclick04">
+                inner
+            </div>
+        </div>
+
+        <!-- 按键事件 @keydown先input再alter @keyup同步input/alter -->
+        <input type="text" @keyup="mykeyup">
+        <br>
+        <br>
         用户名：<input type="text" v-model="username">
         年龄：<input type="text" v-model="age">
         信息汇总：<input type="text" v-model="info">
@@ -42,7 +61,8 @@
         <h3 v-show="!vif">2当前不可视</h3>
 
         <h3 :class="css1">css</h3>
-        <h3 :class="{mystyle2:true,mystyle3:true}">组合css</h3>
+        <h3 :class="{mystyle2:true,mystyle3:true}">组合css111</h3>
+        <h3 :class="['mystyle1','mystyle2']">组合css222</h3>
         <!-- 不能 xxx-yyyy，而需要使用 xxxYyyy-->
         <h3 :style="{backgroundColor:'gray',color:'red'}">info000000</h3>
 
@@ -51,12 +71,25 @@
                 {{student.name}}--{{student.age}}
             </li>
         </ol>
-
+        --------------
+        <ol>
+            <li v-for="(value,name) in students[1]">
+                {{name}}--{{value}}
+            </li>
+        </ol>
+        --------------
         <ul>
             <li v-for="(s,index) in students">
                 {{index}}--{{s.name}}--{{s.age}}--<input type="button" value="删除" @click="deleteStudentByIndex(index)">
+                <input type="button" value="修改" @click="updateStudentByIndex(index,{name:'x',age:0})">
             </li>
         </ul>
+
+        <ol>
+            <li v-for="student in queryStudentsResult">
+                {{student.name}}--{{student.age}}
+            </li>
+        </ol>
     </div>
 
     <script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
@@ -64,14 +97,18 @@
         var vm = new Vue({
             el: '#vue01',
             data: {
+                order: 1,
                 username: '如：张三',
+                queryname: '',
                 age: 23,
                 site: '<a href="https://www.bilibili.com">哔哩哔哩</a>',
+                Bsite: 'https://www.bilibili.com',
                 img: 'D:/image/头像/0.jpg',
                 //computed方法的方法名会成为data中的变量名，返回值就是data中的变量值。相当于：
                 //info:info()    注意：html中只能同变量info调用而不能直接调用computed中的方法info()
 
                 css1: 'mystyle1', //引用css style不需要加'.'
+                css2: 'mystyle2',
                 vif: false,
                 students: [
                     { name: 'zs', age: 23 },
@@ -80,6 +117,22 @@
                 ]
             },
             methods: {
+                myclick01(event){
+                    //event.target  获取当前dom元素
+                    alert(event.target.value)
+                },
+                myclick02(event){
+                    alert(event.target.value)
+                },
+                myclick03(){
+                    alert("outter")
+                },
+                myclick04(){
+                    alert("inner")
+                },
+                mykeyup(event){
+                    alert(event.keyCode+"--"+event.target.value)
+                },
                 method01() {
                     alert('hello world')
                 },
@@ -89,12 +142,32 @@
                 deleteStudentByIndex(index) {
                     //删除数组元素:splice
                     //删除完毕后，数组元素 会自动重新排序
-                    this.students.splice(index, 1);
+                    this.students.splice(index, 1)
                 },
+                updateStudentByIndex(index, stu) {
+                    this.students.splice(index, 1, stu)
+                }
             },
-            computed: {//初始自动加载，和变量是共享的（在data中定义的变量，就不能再在computed中定义）
+            computed: {//初始自动加载，和变量是共享的（在data中定义的变量，就不能再在computed中定义）,data数据改变时也会重新执行
                 info() {//这里是info()方法，该方法只会执行一次，计算后的变量会加载到缓存
                     return this.username + ',' + this.age
+                },
+                queryStudentsResult() {
+                    var queryStudents
+                    //ES6语法
+                    var { queryname, students, order } = this
+                    //类Lamdba表达式
+                    queryStudents = students.filter(
+                        stu => stu.name.indexOf(queryname) > -1
+                    )
+                    queryStudents.sort(function (s1, s2) {
+                        if (order == 0) {
+                            return s1.age - s2.age
+                        } else {
+                            return s2.age - s1.age
+                        }
+                    })
+                    return queryStudents
                 }
             },
             //监听写法1
